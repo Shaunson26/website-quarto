@@ -1,5 +1,6 @@
 project:
   type: website
+  output-dir: html
 
 website:
   title: "Shaun Nielsen"
