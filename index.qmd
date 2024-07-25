@@ -1,0 +1,93 @@
+---
+format: 
+  html:
+    page-layout: full
+---
+
+::: {.grid .home-info}
+::: {.g-col-12 .g-col-md-6}
+Hello! I'm Shaun Nielsen and I'm a Data Scientist.
+
+I enjoy doing data related things such as Biostatistics, Integration and Engineering as well as Web Development and System Administration. 
+
+I have worked as a freelancer, as a Bio-statistician and Data Analyst at NSW Health, and as a Bioinformatician and Researcher at the University of NSW. 
+
+My career has taken me from ecological research (marine, agricultural and human gut) to
+data intelligence for NSW Health's COVID-19 public health response to creating data pipelines and creating prediction models as well as website development.
+
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: profile-image
+:::
+:::
+:::
+
+## What I do
+
+::: {.grid .grid-list}
+::: {.g-col-12 .g-col-md-6}
+::: sn-list-items
+-   Data Science
+    -   Data integration and engineering
+    -   Understanding and application of Information Technology
+    -   DevOps and project management
+-   Applied Biostatistics
+    -   Experimental design and hypothesis testing
+    -   Generalised linear models
+    -   Statistical learning
+-   R statistical computing and RStudio
+    -   Data pipelines
+    -   R Markdown, Flexdashboard, Shiny
+    -   Package development
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: sn-list-items
+-   Frontend web development
+    -   HTML5, CCS3, JavaScript
+    -   WordPress
+    -   Data visualisation - D3, plotly, leaflet, chartjs
+-   Linux servers
+    -   Self-hosting: this website!
+    -   Bioinformatics
+-   SAS and SAS Enterprise Guide
+    -   Data pipelines
+:::
+:::
+:::
+
+## Where I've worked
+
+::: sn-list-items
+-   Freelance [2023 - current]{.year-period}
+    -   HealthStats NSW
+    -   Health Protection NSW, Arbovirus disease surveillance
+    -   CISA 2023
+-   NSW Health, Australia [2019 - 2022]{.year-period}
+    -   Public Health Response Branch
+    -   Centre for Epidemiology and Evidence
+    -   NSW Health Biostatistics Training Program
+-   Lancaster University, UK [2018 - 2019]{.year-period}
+    -   The Lancaster Environmental Centre
+-   University of NSW, Australia [2013 - 2017]{.year-period}
+    -   Centre for Marine Bio-innovation
+:::
+
+## My education
+
+::: sn-list-items
+-   Master of Biostatistics
+    -   University of Sydney
+    -   2018 - 2022
+-   NSW Health Biostatistics Training Program
+    -   NSW Health
+    -   2018 - 2021
+-   Doctor of Philosophy (PhD) in Biological Science
+    -   University of NSW
+    -   2008 - 2013
+-   Bachelor of Science (Marine Science)
+    -   University of NSW
+    -   2003 - 2007
+:::
