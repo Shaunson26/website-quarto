@@ -1,5 +1,11 @@
 /* css styles */
-.navbar {
+p {
+  text-align: justify;
+}
+
+.large-letter {
+  font-weight: bold;
+  font-size: 2em;
 }
 
 .home-info {
@@ -13,9 +19,8 @@
   background-image: url('profile.jpg');
   background-repeat: no-repeat;
   /*background-position: 20% 30%;*/
-  background-position: center top;
+  background-position: center;
   background-size: cover;
-
 }
 
 .grid-list {
@@ -49,4 +54,8 @@
   .year-period {
     display: block;
   }
+  
+.profile-image {
+  height: 350px;
+}
 }

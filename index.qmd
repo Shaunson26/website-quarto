@@ -6,14 +6,11 @@ format:
 
 ::: {.grid .home-info}
 ::: {.g-col-12 .g-col-md-6}
-Hello! I'm Shaun Nielsen and I'm a Data Scientist.
+[H]{.large-letter}ello! I'm Shaun Nielsen.
 
-I enjoy doing data related things such as Biostatistics, Integration and Engineering as well as Web Development and System Administration. 
+I have a diverse professional background encompassing Biostatistics, Data Integration and Engineering, Web Development, and System administration. My career spans roles as a Freelancer, a Biostatistician and Data Analyst at NSW Health, and a Postdoctoral Researcher at the University of NSW.
 
-I have worked as a freelancer, as a Bio-statistician and Data Analyst at NSW Health, and as a Bioinformatician and Researcher at the University of NSW. 
-
-My career has taken me from ecological research (marine, agricultural and human gut) to
-data intelligence for NSW Health's COVID-19 public health response to creating data pipelines and creating prediction models as well as website development.
+I have conducted ecological research and worked in public health, leveraging my analytical and technical skills to provide robust data assets that drive insights, inform decision-making and add to our body of knowledge. Additionally, I bridge technical expertise with creative problem-solving by engaging in website development projects.
 
 :::
 
@@ -91,3 +88,7 @@ data intelligence for NSW Health's COVID-19 public health response to creating d
     -   University of NSW
     -   2003 - 2007
 :::
+
+## Some projects
+
+Maybe some projects here

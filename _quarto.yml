@@ -8,21 +8,19 @@ website:
     left:
       - text: Home
         href: index.qmd
-      - blog.qmd
-      - text: ???
-        href: something.qmd
+      - text: Blog
+        href: blog.qmd
+      - text: Services
+        href: services.qmd
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        href: https://github.com/Shaunson26
+  page-footer: "Shaun Nielsen ABN 123456789"
+  
 format:
   html:
     theme: 
       dark: cyborg
       light: sandstone
-    # theme: 
-    #   - cosmo
-    #   - custom.scss
     css: styles.css
 
 editor: source
