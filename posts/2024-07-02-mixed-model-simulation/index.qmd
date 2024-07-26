@@ -1,0 +1,209 @@
+---
+title: Mixed model simulation
+author: Shaun Nielsen
+date: '2024-07-02'
+categories: [statistics,simulation]
+knitr:
+  opts_chunk: 
+    fig.align: "center"
+---
+
+I have started to believe that a good part of understanding the process of a particular statistical model involves being able to set up a simulation of it. Here we do a simulation of data expected from a fish gut microbiota pilot study that I was involved in
+
+<!--more-->
+
+## Let's go
+
+While we obtain abundance data on many different microbes at once (a community profile) in such studies, the first step is to understand what we can do with just one. This means this approach is applicable to each microbe separately and does not examine the data at community level.
+
+In this simulation, there are 4 gut locations (mouth, foregut, midgut and hindgut) examined from 10 fish (A to J).
+
+The model is:
+
+$$Y_{abundance} = beta1_{gut.location} + sigma1_{fish} + sigma2_{unexplained}$$
+
+## Packages
+
+```{r}
+#| warning: false
+#| 
+library(ggplot2)
+library(lme4)
+library(emmeans)
+```
+
+## Building the data set
+
+There are 4 gut locations and 10 fish, thus there are 40 \* 10 rows required.
+
+```{r}
+fish_data <-
+  expand.grid(
+    gut_location = c("mouth", "foregut", "midgut","hindgut"),
+    fish_id = LETTERS[1:10]
+  ) |>
+  tibble::as_tibble()
+
+fish_data
+```
+
+## Define parameters
+
+Let's assume these proportion trends and that there are about 200 individuals. This gives us the deterministic part of the model.
+
+```{r}
+gut_location_proportion <-
+  c("mouth" = 0.01, 
+    "foregut" = 0.5, 
+    "midgut" = 0.35, 
+    "hindgut" = 0.10
+  )
+
+gut_location_means <- 200 * gut_location_proportion
+  
+gut_location_means
+```
+
+Next we define the variability of fish individuals and unexplained variation.
+
+```{r}
+set.seed(1010)
+
+fish_variation <-
+  rnorm(10, sd = 15) |>
+  round(digits = 0) |>
+  setNames(unique(fish_data$fish_id))
+
+fish_variation
+```
+
+
+```{r}
+residual_variation <-
+  rnorm(n = nrow(fish_data), sd = 5) |> 
+  round(0)
+
+residual_variation
+```
+
+## Simulating the counts
+
+Then we use the above to create observed counts
+
+```{r}
+set.seed(1010)
+
+fish_data_build <-
+  fish_data |> 
+  dplyr::mutate(
+    location_count = gut_location_means[gut_location],
+    fish_variation = fish_variation[fish_id],
+    residual_variation = residual_variation,
+    observed_count = location_count + fish_variation + residual_variation,
+    observed_count = ifelse(observed_count < 0, 0, observed_count)
+  )
+
+fish_data_build
+```
+
+And lastly, clean up the data
+
+```{r}
+fish_data_final <-
+  fish_data_build |>
+  dplyr::select(gut_location, fish_id, observed_count)
+
+fish_data_final
+```
+
+## Data exploration
+
+Counts by fish individuals
+
+```{r}
+fish_data_final |>
+  ggplot(aes(x = gut_location, y = observed_count, group = fish_id)) +
+  geom_line()
+```
+
+In another way
+
+```{r}
+fish_data_final |>
+  ggplot(aes(x = gut_location, y = observed_count, group = fish_id)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(vars(fish_id), nrow = 2)
+```
+
+Hand calculating parameters
+
+```{r}
+fish_data_final |>
+  dplyr::group_by(gut_location) |>
+  dplyr::summarise(
+    mean_count = mean(observed_count)
+  )
+```
+
+```{r}
+fish_data_final |>
+  dplyr::group_by(fish_id) |>
+  dplyr::summarise(
+    mean_count = mean(observed_count)
+  ) |>
+  dplyr::ungroup() |>
+  dplyr::summarise(
+    sd_count = sd(mean_count)
+  )
+```
+
+
+## Modelling
+
+We fit the model like so
+
+```{r}
+fit1 <- lmer(observed_count ~ gut_location + (1|fish_id), data = fish_data_final)
+
+plot(fit1, pch = 19)
+```
+
+And obtain a model summary
+
+```{r}
+fit1_summary <- summary(fit1)
+fit1_summary
+```
+
+And we obtain the values we used for the data simulation
+
+```{r}
+fit1_summary$coefficients
+fit1_summary$varcor
+```
+
+Lastly, a final plot ...
+```{r}
+fit1_means <- 
+  emmeans::emmeans(fit1, specs = 'gut_location') |>
+  as.data.frame()
+```
+
+
+```{r}
+fish_data_final |>
+  ggplot(aes(x = gut_location, y = observed_count)) +
+  geom_jitter(height = 0, width = 0.15) +
+  geom_point(data = fit1_means,
+             mapping = aes(y = emmean), 
+             color = 'red', size = 4, shape = 'cross') +
+  geom_line(data = fit1_means,
+            mapping = aes(y = emmean, group = 1), 
+            color = 'red') +
+  geom_errorbar(data = fit1_means, 
+                mapping = aes(y = NULL, ymax = upper.CL, ymin = lower.CL), 
+                color = 'red',
+                width = 0.1)
+```
+

@@ -49,6 +49,11 @@ p {
   font-weight: normal;
 }
 
+pre {
+  background-color: rgba(90, 91, 90, .35);
+  border: 1px solid rgba(90, 91, 90, .65);
+}
+
 /* On screens that are 600px or less, set the background color to olive */
 @media screen and (max-width: 600px) {
   .year-period {
