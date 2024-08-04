@@ -1,0 +1,92 @@
+---
+title: Modularising code
+author: Shaun Nielsen
+date: '2023-11-27'
+slug: []
+categories: ['coding-practices']
+tags: []
+---
+
+I've been working on a project where I've had to incorporate better development practices. One issue was the long-winded functions that required breaking up into into smaller pieces for unit testing, and easy digestion by future developers.
+
+<!--more-->
+
+## Background
+
+-   Working with non-programming but data/stat experts
+-   Long functions
+-   No testing
+
+## Example function
+
+``` r
+this_long_function <- function(data){
+  
+  data_tmp <-
+    data %>% 
+    dplyr::filter(this)
+  
+  data_tmp <-
+    data_tmp %>%
+    to_that
+  
+}
+```
+
+**Issues:** How do we easily understnad what each step is doing and further ensure they're doing them correctly?
+
+## Modular code
+
+``` r
+#| eval = F
+step1 <- function(data){
+  do this
+}
+
+step2 <- function(data){
+  do that
+}
+
+this_long_function <- function(data){
+  
+  data_tmp <-
+    step1()
+  
+  data_tmp <-
+    step2()
+  
+}
+```
+
+```         
+## Error: <text>:2:6: unexpected symbol
+## 1: step1 <- function(data){
+## 2:   do this
+##         ^
+```
+
+``` r
+test_that("add_rolling_year_data works", {
+
+  zz =
+    data.frame(year = 2022:2021,
+               value = 2:1)
+
+  result <- add_rolling_year_data(zz, 2)
+
+  # Should have 2x 2022 with rolling values of 2022 and 2021
+  # Should have 1 2021 with rolling values 2021
+  expected =
+    data.frame(year = c(2022,2021,2022),
+               value = c(2L,1L,1L),
+               year_rolling = c(2022L,2021L,2021L))
+
+  expect_identical(result, expected = expected)
+
+
+})
+```
+
+```         
+## Error in test_that("add_rolling_year_data works", {: could not find function "test_that"
+```

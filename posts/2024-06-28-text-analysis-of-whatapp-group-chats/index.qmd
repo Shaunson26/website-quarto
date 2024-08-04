@@ -1,0 +1,512 @@
+---
+title: Text analysis of whatapp group chats
+author: Shaun Nielsen
+date: '2024-06-28'
+categories: ['text-analysis']
+tags: ['visualisation', 'text']
+---
+
+I recently began to read the ["Text Mining with R" book](https://www.tidytextmining.com/) from by Julia Silge and David Robinson. I thought I would apply this knowledge to my Whatapp group chats
+
+<!--more-->
+
+## Exporting the data
+
+Whatsapp allows you to export chats to a text file. For long running, or message intensive chats this does not always work - Whatapp sucks sometimes. I was fortunate enough to be able to export my group chat that begun in Janurary 2023. Furthermore, you can export with or without media. Since I was doing a text analysis, I chose to export without media.
+
+Within whatapp on my phone, I went to the group chat \> chat options (3 vertical dots) \> more \> Export chat \> Without media, and exported the chat to my my googledrive. I then copied the file to my project directory.
+
+```         
+epl-chat.txt
+```
+
+## The data
+
+The data is a text file with each line a message from the chat. We use `readLines()` to import it into R
+
+```{r}
+chat_raw <- readLines("epl-chat.txt")
+```
+
+```{r, eval=F, echo=F}
+chat_raw <- readLines("content/posts/2024-06-28-text-analysis-of-whatapp-group-chats/epl-chat.txt")
+```
+
+There were `r length(chat_raw)` messages in this file
+
+```{r}
+length(chat_raw)
+```
+
+The general structure of the messages are
+
+-   timestamp
+-   name
+-   message text
+
+Note: there are some messages that do not follow this structure and they are messages involved with the chat setup e.g. "Person added you" or "Person left the chat", or when there are multi-line messages, or for some other reason.
+
+```{r}
+head(chat_raw)
+```
+
+## Data wrangling
+
+### Packages
+
+We use tidyverse packages `dplyr`, `tidyr` and `ggplot2` as well as `tidytext`, `emoji` and `wordcloud` packages.
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(tidytext)
+library(emoji)
+library(ggplot2)
+library(wordcloud)
+```
+
+### Fix multi-line messages
+
+When there is a newline character in a message i.e. a message with multple lines, it will create a new line in the exported chat. We want all the text from a message to be on one line, and in-line with the timestamp and name.
+
+For example
+
+```{r}
+# Output lines 2:4 are from the same message
+chat_raw[123:127]
+```
+
+We can identify where these occur by checking if the line begins with a date
+
+```{r}
+# Return row indices of lines not starting with a date
+starts_with_1_or_2_digits <- '^[[:digit:]]{1,2}/'
+
+not <- function(x){ !x }
+
+multiline_msgs <-
+  grepl(pattern = starts_with_1_or_2_digits, x = chat_raw) |>
+    not() |>
+    which()
+
+# Note 125, 126 and 825, 826 are each part of multi-line messages
+head(multiline_msgs)
+```
+
+The root message of these is then the index - 1 (the previous message)
+
+```{r}
+# 124 with 125, 126
+chat_raw[124:126]
+# 824 with 825, 826
+chat_raw[824:826]
+```
+
+#### Joining multi-line messages
+
+The algorithm to fix these would be to
+
+-   start at the last index and paste that text with the index - 1 text (the previous message)
+-   repeat for all multi-line indices
+-   finally, remove multi-line indices
+
+```{r}
+chat_raw_single <- chat_raw
+
+for(curr_msg_ind in rev(multiline_msgs)){
+  
+  # Paste with previous message
+  prev_msg_ind = curr_msg_ind - 1
+  
+  chat_raw_single[prev_msg_ind] <-
+    paste(chat_raw_single[prev_msg_ind],
+          chat_raw_single[curr_msg_ind])
+  
+  # Finally remove mutli-line messages
+  if (curr_msg_ind == multiline_msgs[1]) {
+    chat_raw_single <-
+      chat_raw_single[-multiline_msgs]
+    
+  }
+  
+}
+```
+
+```{r}
+chat_raw_single[124]
+chat_raw_single[821] # index lower since we removed lines
+```
+
+### Parse text data
+
+The first goal is to split the messages into a 3-column data.frame by:
+
+-   timestamp
+-   name
+-   message text
+
+The timestamp is separated from the name and text components with `-`, and the name is separated from the text with a `:`.
+
+#### Split time from name-text
+
+Note: if `-` is found anywhere else in the message line, then it will create additional splits.
+
+```{r}
+chat_split_raw <-
+  chat_raw_single |>
+  strsplit(split = ' - ')
+```
+
+This should return a large list of lists, each with 2 elements - the timestamp and the name-text.
+
+```{r}
+chat_split_raw[10:12]
+```
+
+For quality control, we can count the number of elements in each split to identify where there are **not** 2 elements - messages that do not follow the timestamp-name-text convention, or where there are additional `-` in the message text, or something else we do not know about
+
+Below shows there are messages with 2 to 6 split elements
+
+```{r}
+split_counts <- 
+  chat_split_raw |>
+  sapply(length)
+
+split_counts |>
+  table()
+```
+
+It looks like most, if not all, of the cases with 3 to 6 elements are because of multiple `-` in the message.
+
+```{r}
+chat_raw_single[ split_counts == 3 ][1:5]
+chat_raw_single[ split_counts >= 4 ]
+```
+
+We can fix this by simply pasting the 2nd to nth elements together. We will need to do this again later, so I created a function for doing this
+
+```{r}
+# Paste the 2nd to nth elements together
+paste_2_nth <- function(x, collapse){
+    c(x[1],
+      paste(x[2:length(x)], collapse = collapse))
+}
+
+# Example
+paste_2_nth(c('time', 'text1', 'text2'), collapse = ' - ')
+```
+
+```{r}
+chat_split_time <-
+  chat_split_raw |>
+  lapply(FUN = paste_2_nth, collapse = ' - ')
+
+chat_split_time |>
+  sapply(length) |>
+  table()
+```
+
+#### Split name from text
+
+We can split the name-text using a similar approach to above but using `:`. Again, if there are multiple `:` in a message, we will split the text multiple times, and need to paste the 2nd to nth back together (using the function we created above)
+
+```{r}
+chat_split_final <-
+  chat_split_time |>
+  lapply(FUN = function(msg){
+    
+    timestamp <- msg[1]
+    name_text <- msg[2]
+    
+    # Split name and text
+    name_text_2 <-
+      name_text |>
+      strsplit(split = ': ') |>
+      lapply(FUN = paste_2_nth, collapse = ': ') |>
+      unlist() |>
+      setNames(c('name', 'text'))
+    
+    # Return  named 3 element vector
+    c(time = timestamp, name_text_2)
+    
+  })
+```
+
+```{r}
+chat_split_final[10:12]
+
+chat_split_final |>
+  sapply(length) |>
+  table()
+```
+
+#### Create data.frame
+
+We will work with the data in a data.frame from here on.
+
+```{r}
+chat_df <-
+  chat_split_final |>
+  dplyr::bind_rows()
+
+chat_df[10:15,]
+```
+
+### Cleaning names
+
+Some of the names of messages are a result of changes to the group itself, such as changing the group name, people coming and going, etc. We need to remove these.
+
+```{r}
+chat_df |>
+  dplyr::count(name) |> 
+  print(n = Inf)
+```
+
+We can match those "names" we do not want
+
+```{r}
+chat_df_clean <-
+  chat_df |>
+  dplyr::filter(!grepl(' added |left$| changed | created |^Messages|an admin$|messages.$| message timer', name))
+```
+
+Now we have only true messages from people in the group
+
+```{r}
+chat_df_clean |>
+  dplyr::count(name) |> 
+  print(n = Inf)
+```
+
+### Cleaning messages
+
+When we choose to exlcude media in the Whatapp export, it still exports that a message was created but with the text `"<Media omitted>"`. We want to remove such messages.
+
+```{r}
+chat_df_clean |> 
+  dplyr::count(text, sort = T) |> 
+  print(n = 20)
+
+chat_df_clean <-
+  chat_df_clean |>
+  dplyr::filter(!text %in% c("<Media omitted>", "This message was deleted"))
+```
+
+We also want to remove `"<<This message was edited>"` from text
+
+```{r}
+chat_df_clean |>
+  dplyr::filter(grepl('<This message was edited>', text))
+
+chat_df_clean <-
+  chat_df_clean |>
+  dplyr::mutate(text = sub(' <This message was edited>$', '', text))
+
+chat_df_clean |>
+  dplyr::filter(grepl('<This message was edited>', text))
+```
+
+### Split message text into words
+
+We will split words using a space . This will create a **list column** (since we are using tibbles). We unnest the list column to have the words of a message still associated with the name of the person. And then convert all text to lower case
+
+```{r}
+chat_words <-
+  chat_df_clean |>
+  dplyr::mutate(word = strsplit(text, split = ' ')) |>
+  dplyr::select(!text) |>
+  tidyr::unnest(cols = word) |>
+  dplyr::mutate(word = tolower(word))
+```
+
+```{r}
+chat_words
+```
+
+#### Cleaning words
+
+Remove stop words, HTTP links, clean punctuation and emojis.
+
+```{r}
+chat_words |>
+  dplyr::count(word, sort = TRUE)
+
+# Include grammatically incorrect stop words from the tidytext list of stop words
+# e.g. don't and dont, i'll and ill
+my_stop_words <-
+  dplyr::bind_rows(
+    tidytext::stop_words,
+    dplyr::mutate(tidytext::stop_words, word = gsub('[[:punct:]]+', '', word))
+  ) |>
+  dplyr::distinct(word)
+
+# Remove HTTP links, clean punctuation and stop words
+chat_words_clean <-
+  chat_words |>
+  dplyr::filter(!grepl('^@|^http', word)) |>
+  dplyr::mutate(word = gsub('[[:punct:]]+', '', word)) |>
+  dplyr::filter(word != '') |>
+  dplyr::filter(!grepl('^[[:digit:]]+$', word)) |>
+  dplyr::anti_join(my_stop_words, by = 'word')
+```
+
+There are also emojis in the text. These are annoying to deal with, especially when there are multiple ones together without a space. We will just take the first one if there are many
+
+```{r}
+chat_words_clean |> 
+  dplyr::filter(emoji::emoji_detect(word))
+
+chat_words_clean_emoji <-
+  chat_words_clean |>
+  dplyr::mutate(word = dplyr::case_when(
+    emoji::emoji_detect(word) ~ emoji::emoji_fix(substr(word, 1,1)),
+    .default = word
+  )) 
+
+chat_words_clean_emoji |> 
+  dplyr::filter(emoji::emoji_detect(word))
+```
+
+Thus our final word counts looks something like this
+
+```{r}
+chat_words_clean_emoji |> 
+  dplyr::count(word, sort = TRUE)
+```
+
+### Final clean data
+
+We create two objects
+
+-   chat_text_final: timestamp, name, message text
+-   chat_words_final: timestamp, name, words in text
+
+```{r}
+chat_text_final <- chat_df_clean
+chat_words_final <- chat_words_clean_emoji
+
+chat_text_final
+chat_words_final
+```
+
+## Visualisations
+
+### The number of messages by person
+
+By creating a colour scheme object, we can easily shift between team colours for the plot. Here we will use Arsenal colours, but note the Liverpool once exits.
+
+```{r}
+# Arsenal
+brand_colours <-
+  list(
+    main = "#EF0107",
+    sub = "#023474",
+    supp = "#9C824A",
+    white = "white"
+  )
+
+# # Liverpool
+# brand_colours <-
+#   list(
+#     main = "#C8102E",
+#     sub = "#00B2A9",
+#     supp = "#F6EB61",
+#     white = "white"
+#   )
+
+chat_text_final |>
+  dplyr::count(name) |>
+  dplyr::arrange(n) |> 
+  dplyr::mutate(name = factor(name, levels = name)) |>
+  ggplot(aes(y = name, x = n)) +
+  geom_col(fill = brand_colours$sub) +
+    geom_text(aes(label = n), color = brand_colours$sub, hjust = 0, nudge_x = 10, size = 4,
+            vjust = 0.33) +
+  labs(title = 'Group Chat messages',
+       subtitle = 'since January 2023',
+       y= NULL,
+       x = 'Number of messages sent') +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  theme(
+    text = element_text(colour = brand_colours$white, size = 16),
+    axis.text = element_text(colour = brand_colours$white),
+    axis.ticks = element_line(colour = scales::alpha(brand_colours$white, 0.5)),
+    axis.ticks.y = element_blank(),
+    axis.text.y = element_text(vjust = 0.35),
+    plot.background = element_rect(fill = brand_colours$main),
+    panel.background = element_rect(fill = brand_colours$main),
+    plot.title.position = 'plot',
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_line(colour = scales::alpha(brand_colours$white, 0.5)),
+    panel.grid.minor.x = element_blank(),
+  )
+```
+
+### Word cloud
+
+We first need to count the words
+
+```{r}
+chat_words_count <-
+  chat_words_final |>
+  dplyr::count(word, sort = T)
+```
+
+And create a default word cloud function
+
+```{r}
+wordcloud_default <- function(data, max.words, title){
+  
+  wordcloud::wordcloud(
+    words = data$word,
+    freq = data$n,
+    scale = c(3, 0.5),    # Set min and max scale
+    max.words = max.words,      # Set top n words
+    random.order = FALSE, # Words in decreasing freq
+    random.color = TRUE,
+    rot.per = 0,      # % of vertical words
+    use.r.layout = FALSE, # Use C++ collision detection
+    colors = unlist(brand_colours[c('main', 'main', 'sub', 'sub', 'supp')]))
+  
+  if (!missing(title)){
+    
+    text(x = 0.5, y = 1, labels = title)
+    
+  }
+  
+}
+```
+
+```{r, fig.width=5, fig.asp=1}
+set.seed(1010)
+
+par(mar = rep(0, 4))
+
+wordcloud_default(chat_words_count, max.words = 100)
+```
+
+```{r, fig.width=10, fig.asp=0.5, warning=FALSE}
+chat_words_count_gerrard <-
+  chat_words_final |>
+  dplyr::filter(name == "Gerrard") |>
+  dplyr::count(word, sort = T)
+
+chat_words_count_james <-
+  chat_words_final |>
+  dplyr::filter(name == "James") |>
+  dplyr::count(word, sort = T)
+
+# The plot
+par(mfrow = c(1,2), mar = rep(0,4))
+
+wordcloud_default(chat_words_count_gerrard,
+                  max.words = 50,
+                  title = 'Gerrard')
+
+wordcloud_default(chat_words_count_james,
+                  max.words = 50,
+                  title = 'James')
+
+```

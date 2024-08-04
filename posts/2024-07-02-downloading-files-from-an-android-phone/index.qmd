@@ -1,0 +1,124 @@
+---
+title: Downloading files from an android phone
+author: Shaun Nielsen
+date: '2024-07-02'
+slug: []
+categories: []
+tags: []
+---
+
+I had to transfer many files from an SD card in an Android phone. Windows explorer kept crashing, so I sort another method and one that can be do programmatically - the Android Debug Bridge.
+
+<!--more-->
+
+## Setup Android Debug Bridge
+
+The ADB is tool used for communicating with an Android device from the computer. Default OS command lines cannot interact with an USB attached phone.
+
+> I followed this guide
+
+-   Invoke Developer options
+
+-   Enable USB debugging
+
+-   Download ADB tools to the computer
+
+-   Add to path
+
+```         
+$env:PATH += ';C:\Users\Shaun\Downloads\platform-tools-latest-windows\platform-tools;'
+$env:PATH
+```
+
+## adb executable
+
+```         
+adb devices
+```
+
+Shell on the phone
+
+```         
+adb shell
+```
+
+Pull - copy files/dirs from device
+
+```         
+adb pull 'file/on/device' 'file/on/destination'
+```
+
+## Copy files
+
+``` ps
+```
+
+Device paths
+
+```         
+adb shell
+```
+
+```         
+jackpotlte:/ $ ls
+
+acct               charger      dev                     init.baseband.rc  init.samsungexynos7885.rc     keydata   omr                    proc           sepolicy         ueventd.samsungexynos7885.rc
+atrace.rc          config       efs                     init.carrier.rc   init.samsungexynos7885.usb.rc keyrefuge plat_file_contexts     product        sepolicy_version vendor
+audit_filter_table cpefs        etc                     init.container.rc init.usb.configfs.rc          lib       plat_property_contexts publiccert.pem storage          vendor_file_contexts
+bin                d            factory                 init.environ.rc   init.usb.rc                   mnt       plat_seapp_contexts    root           sys              vendor_property_contexts
+bugreports         data         fstab.samsungexynos7885 init.rc           init.zygote32.rc              odm       plat_service_contexts  sbin           system           vendor_seapp_contexts
+cache              default.prop init                    init.rilmptcp.rc  init.zygote64_32.rc           oem       preload                sdcard         ueventd.rc
+
+jackpotlte:/ $ cd storage/
+jackpotlte:/storage $ ls
+
+3333-6364 emulated enc_emulated self 
+
+jackpotlte:/storage $ cd 3333-6364/
+
+jackpotlte:/storage/3333-6364 $ ls
+
+Android DCIM LOST.DIR Media\ 20220315 Media\ 20221101 Media\ 20230401 Media\ 20230919 Media\ 20240605 Media20231222 OLYMPUS
+
+jackpotlte:/storage/3333-6364 $ pwd
+
+/storage/3333-6364
+
+jackpotlte:/storage/3333-6364 $ exit
+```
+
+```         
+ls()
+pwd()
+exit
+```
+
+## something
+
+``` ps
+$folders = 'DCIM', 'Media 20220315', "Media 20221101", "Media 20230401", "Media 20230919", "Media 20240605", "Media20231222"
+
+$remote = "/storage/3333-6364/" + $folders[0]
+$remote
+$local = "D:\pictures\to-sort\" + $folders[0]
+$local
+```
+
+```         
+## /storage/3333-6364/DCIM
+## D:\pictures\to-sort\DCIM
+```
+
+```         
+adb pull $remote $local
+
+PS C:\Users\shaun\Documents\adb-copy> adb pull $remote $local
+[ xx%] /storage/3333-6364/../../.mp4: x% 
+/storage/3333-6364/../: 3942 files pulled, 0 skipped. 17.8 MB/s (3113465513 bytes in 166.649s)
+```
+
+A for loop
+
+```         
+blah blah
+```
