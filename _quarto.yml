@@ -4,6 +4,11 @@ project:
 
 website:
   title: "Shaun Nielsen"
+  favicon: metaicon.png
+  open-graph:
+    locale: es_ES
+    site-name: Shaun Nielsen
+    description: Homepage of Shaun Nielsen.
   navbar:
     left:
       - text: Home
