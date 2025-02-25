@@ -26,42 +26,50 @@ I have conducted ecological research and worked in public health, leveraging my 
 ::: {.grid .grid-list}
 ::: {.g-col-12 .g-col-md-6}
 ::: sn-list-items
--	Statistical Analysis & Biostatistics
-  -	Design, implementation, interpretation
-  -	Regression modelling, survival analysis
-  -	Statistical programming (R, SAS)
-  -	Machine learning
-  -	Data visualisation
-- Data Engineering & Management
-  -	Data pipeline development and maintenance
-  -	Database use and management (SQL)
-  -	Data APIs
-  -	Data warehousing concepts
--	Programming & Scripting
-  -	R, SAS, SQL
-  -	PowerShell, shell,
-  - JavaScript
-- DevOps & Software Engineering: 
-  -	Version control (git) 
-  -	Unit testing
-  -	Continuous Integration/Continuous Deployment (CI/CD)
 
+- Statistical Analysis & Biostatistics  
+  - Design, implementation, interpretation
+  - Regression modelling, survival analysis
+  - Statistical programming (R, SAS)
+  - Machine learning
+  - Data visualisation
+  
+- Data Engineering & Management  
+  - Data pipeline development and maintenance
+  - Database use and management (SQL)
+  - Data APIs
+  - Data warehousing concepts
+  
+- Programming & Scripting  
+  - R, SAS, SQL
+  - PowerShell, shell,
+  - JavaScript
+  
 :::
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ::: sn-list-items
--	System Administration and Maintenance
-  -	Windows and Linux
--	Frontend Web Development
-  -	HTML, CSS, JavaScript
-  -	Node, NPM
-  - expressjs
-  -	Bootstap 5
--	Project Management and Tools
-  -	Strategic work item management and organisation
-  -	Visual progress tracking and reporting
-  -	Effective collaboration and communication
+
+- DevOps & Software Engineering:  
+  - Version control (git) 
+  - Unit testing
+  - Continuous Integration/Continuous Deployment (CI/CD)
+
+- System Administration and Maintenance  
+  - Windows and Linux
+
+- Frontend Web Development  
+  - HTML, CSS, JavaScript
+  - Node, NPM
+  - Express web framework
+  - Bootstrap 5
+
+- Project Management and Tools  
+  - Strategic work item management and organisation
+  - Visual progress tracking and reporting
+  - Effective collaboration and communication
+  
 
 :::
 :::
@@ -119,31 +127,31 @@ I have conducted ecological research and worked in public health, leveraging my 
 ## Some projects
 
 ::: sn-list-items
+
+- Health data pipeline management
+
+Developed and maintained a Windows server cluster at NSW Health for scheduled ETL pipelines, dashboard creation and ad-hock data requests, with automated error reporting and summary e-mail notifications, and task logging for troubleshooting. I introduced version control, modularised pipeline steps, created functions in pipelines and improved documentation for future future personel. 
+
 - Predictive modelling for escalation in therapy of children with IBD
 
-Used statistical learning techniques to predict escalation in therapy from blood,
-stool and demographic biomarkers/predictors for children with IBD in collaboration with
-researchers and clinicians from The Sydney Children's hospital. See the working prediction
-model as a shiny app [here](https://shaun-nielsen.shinyapps.io/inflix-predict/).
+Used statistical learning techniques to build a prediction model for paediatric use of ‘biologics’ in inflammatory bowel disease (IBD) using blood and stool biomarkers, with researchers and clinicians at the Sydney Children’s Hospital and University of NSW (Australia). See the working prediction model as a shiny app [here](https://shaun-nielsen.shinyapps.io/inflix-predict/).
 
 
-- Data standardisation and normalisation from Arbovirus field records
+- Data normalisation and visualisation templates for NSW Arbovirus and Mosquito Monitoring Surveillance Program
 
-Standardised data from mosquito trapping and chicken antibody data across sites and
-sampling dates in NSW from historical records and for future data for efficient 
-reporting for NSW Arbovirus and Mosquito Monitoring Surveillance Program. The data
-is used in PowerBI reports [here](https://uatweb.datansw.links.com.au/insights/arbovirus).
+Normalised the Arbovirus survey, laboratory and notification data, and prototyped visualisations (geographic maps, bar and line charts, heatmaps), for downstream developer use in creating the “NSW Arbovirus and Mosquito Monitoring Surveillance Program Dashboard” from Environmental Health Branch (NSW Health, Australia).  The data is used in a PowerBI report [here](https://uatweb.datansw.links.com.au/insights/arbovirus).
 
 - Data pipeline formalisation for spatial smoothing of health indicators
 
-...
+Applied software engineering and development principles to generalize, formalize and package the codebase for model based, spatial smoothing pipelines of HealthStats NSW indictors within an R package framework, including the modular functions, documentation, vignettes and unit testing.
+
+- Biostatistics refractive eye surgery 
+
+Biostatistical consultant - designed the Statistical Analysis Protocol for a project analysing visual outcomes, efficacy and safety of a new generation laser eye machines with researchers at the University of NSW (Australia), Shroff Eye Centre, New Delhi (India) and Johnson & Johnson Vision (Singapore). 
+
+- Web application exploring local climate projections and politican voting on climate policies 
+
+Developed and deployed an MVP web application for local climate projection and politician voting analysis with researchers from the University of Sydney (Australia). Integrated and processed data from multiple data APIs, created a fast and accurate address search database, managed the server deployment and used continuous integration and continuous delivery (CI/CD) practices. See the app [here](http://dev.myclimate.com.au)
 
 
-- Biostatistics of results from refractive eye surgery 
-
-...
-
-- Web app construction for personalized climate projections and politician behaviour 
-
-...
 :::
