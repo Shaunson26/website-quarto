@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: 
+Disallow: /cgi-bin/
+Disallow: /rstudio/
+Disallow: /shiny/
+Sitemap: https://shaunnielsen.com/sitemap.xml

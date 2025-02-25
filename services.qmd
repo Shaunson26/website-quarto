@@ -1,11 +1,16 @@
 
-Let me work for you
+I provide a variety of data and web related services including:
 
 - Data analysis
 - Data quality
 - Statistical modelling
 - Statistical (machine) learning
-- Codebase consolidation
+- Code-base consolidation
 - Function testing
 - R Package creation
 - Website design
+
+I like to use R for most data related work, use git for version control and do 
+collaborative work through GitHub.
+
+Contact me and we can discuss how I can provide assistance. 

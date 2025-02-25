@@ -1,0 +1,369 @@
+---
+title: Plotly dropdown box
+author: Shaun Nielsen
+date: '2024-08-25'
+categories: [plotly,htmlwidget, data visualisation]
+knitr:
+  opts_chunk: 
+    fig.align: "center"
+---
+
+In this post, we look at using [dropdown events](https://plotly.com/r/dropdowns/) such as dropdown boxes within the plotly R package. The task is a good introduction
+to how R and JavaScript are linked within plotly (and htmlwidgets), and how we
+replicate data structures between the two languages. Spurred on by helping a friend with this task, I thought I might write a short document on it.
+
+<!--more-->
+
+## Introduction
+
+Plotly is a JavaScript (JS) visualisation library that we can access in R for interactive visualisations - within an R session or embedded in R markdown documents and R Shiny applications. The way it works in R is that we have access to the javascript library using the `plotly` and `htmlwidgets` packages. Basically, the data and plot parameters are captured in R, transformed slightly, and sent into Plotly JS for visualisation.
+
+Here we look at [dropdown events](https://plotly.com/r/dropdowns/) in Plotly
+to create a dropdown menu able to subset the data that is embedded in the Plotly visualization element. This transform action happens within Plotly, and not with other methods e.g. crosstalk.
+
+The goal:
+
+```{r}
+#| echo: false
+knitr::include_graphics('diagram-plan.svg')
+```
+
+## Package required 
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(plotly)
+```
+
+## The data
+
+The data is contains the number of animals tested (`number_animals`) undergoing different types of tests (`test_type`) for different animals (`animal`) across different years (`years`).
+
+```{r}
+animal_tests <- readr::read_csv('yearly-animal-testing.csv', show_col_types = F)
+
+animal_tests
+
+# 5 years
+animal_tests |>
+  dplyr::count(year)
+
+# 3 animals
+animal_tests |>
+  dplyr::count(animal)
+
+# 3 test types
+animal_tests |>
+  dplyr::count(test_type)
+```
+
+## Step by step
+
+We first simulate what we want to do. We filter the column `animal` equal to `"cow"`, and then create a plot. However, in the end we want a dropdown box to do this this filtering step, and to allow us to choose what animal to visualise.
+
+I have included a hovertemplate, as it is useful for troubleshooting and quality control - allowing us to see what data is being plot. **We can fall into a trap where the data and transformations are incorrect, but a visualisation is still produced!**
+
+Hoverving over the bars of the following plot, we should see what we have only plot data from cows, with values being the number of animals, the x axes the sampling year and the bars colours the test type.
+
+```{r}
+animal_tests |>
+  dplyr::filter(animal == 'cow') |>
+  plot_ly(x = ~year, y = ~number_animals, color = ~test_type,
+          type = 'bar',
+          text =~animal,
+          hovertemplate = paste0(
+            "Animal: %{text}<br>",
+            "Year: %{x}<br>",
+            "Total Animals: %{y}",
+            "<extra></extra>"
+          )
+  )
+```
+
+## What we need to do
+
+We need to add these elements to the above plot:
+
+  - a **transforms** element describing how to filter the data: what columns and operation to do
+  - a **button** element with different buttons that sends values to the transforms element
+  
+Note that the *transforms* elements is within the `plot_ly()` call and the buttons live inside the `layout()` call.
+
+```{r}
+#| eval: false
+# ... represents other necessary code for the plot
+data |>
+  plot_ly(...,
+          transforms = '{ transform code }' ) |>
+  layout(...,
+         updatemenus = '{ button code }' )
+
+```
+
+### A side quest
+
+A difficulty here is how we provide the configuration values to plotly. There is the nesting of elements - lists of lists of lists - which comes from
+JavaScript Object Notation (JSON) in web development (which is the domain Plotly is written in, and also all the Rmarkdown stuff). This is a hierarchical data format, and traditionally how you would pass values into the Plotly JS package to build a plot:
+
+```{js}
+#| eval: false
+// A JSON object
+{
+  name: "John Smith",
+  age: 36
+  address = {
+    number: 123
+    street: "Fake St"
+    suburb: "Springfield"
+  },
+  items = [
+    {
+      item: 'phone',
+      size: 'small'
+    },
+    {
+      item: 'television',
+      size: 'large'
+    }
+  ]
+}
+```
+
+We can transform it into R code using `list()`. Note how the items element is a list of list elements (or list objects). Sometimes we forget an outer list and this is the reason the code does not work.
+
+```{r}
+#| eval: false
+
+list(
+  name = "John Smith",
+  age = 36,
+  address = list(
+    number: 123,
+    street: "Fake St",
+    suburb: "Springfield",
+  ),
+  items = list(
+    list(    
+      item ='phone',
+      size = 'small'
+    ),
+    list(
+      item = 'television',
+      size = 'large'
+    )
+  )
+)
+```
+
+### Adding the transforms
+
+Within the `plot_ly()` call we include the `transforms` parameter, which takes in a 
+list of transform elements (themselves being a list of values). 
+
+There transform element here: 
+
+```{r}
+#| eval: false
+
+list(  
+  type = 'filter',       # filter function
+  target = data_column,  # target data column to filter
+  operation = '=',       # comparison operation <, >, <=, >=, =   
+  value = default_value  # The value to first filter on
+)
+```
+
+A good practice is to include a title comment to separate code chunks for better visibility
+as well as reminding yourself of the number of transforms you have **starting from 0** (you can have many transforms in you plot).
+
+Below we are filtering the `animal` column to `=` (equal) values we pass to it (similar to `dplyr::filter(data, animal == 'cow'`)). Notice the output plot is plotting the data with the transform value of 'cow', and we
+are presented with cow data only (use the hover labels to verify).
+
+
+```{r}
+animal_tests |>
+  plot_ly(x = ~year, y = ~number_animals, color = ~test_type,
+          type = 'bar',
+          text =~animal,
+          hovertemplate = paste0(
+            "Animal: %{text}<br>",
+            "Year: %{x}<br>",
+            "Total Animals: %{y}",
+            "<extra></extra>"
+          ),
+          transforms = list(
+            # transform 0 
+            list(  
+              type = 'filter',
+              target = ~animal,
+              operation = '=',
+              value = ~unique(animal)[1] # cow
+              # value = 'cow'            # this would also work
+            )
+          )
+  )
+```
+
+### Adding the buttons
+
+This part is painful as we need repeat ourselves a lot. We must do it by hand first
+to see how it works, and in the end we will use a function to handle this.
+
+The dropdown element with buttons:
+
+```{r}
+#| eval: false
+
+list(
+  type = 'dropdown',              # The type of button element
+  buttons = list(                 # The list of buttons
+    # button 0                    # The first button
+    list(method = "restyle",      # Use plotlys restyle method
+         args = list(
+           "transforms[0].value", # Update the first transforms value
+           value0                 # With this value
+         ),
+         label = "Value 0"        # The label we see on the button
+    ),
+    # button 1
+    list(method = "restyle",
+         args = list("transforms[0].value;}", value1),
+         label = "Value 1"
+    ),
+    # button n
+    list(method = "restyle",
+         args = list("transforms[0].value", valueN),
+         label = 'Value N'
+    )
+  )
+)
+```
+  
+We add this to a `layout()` call and into the `updatemenus` parameter.
+  
+```{r}
+animal_tests |>
+  plot_ly(x = ~year, y = ~number_animals, color = ~test_type,
+          type = 'bar',
+          text =~animal,
+          hovertemplate = paste0(
+            "Animal: %{text}<br>",
+            "Year: %{x}<br>",
+            "Total Animals: %{y}",
+            "<extra></extra>"
+          ),
+          transforms = list(
+            # transform 0 
+            list(  
+              type = 'filter',
+              target = ~animal,
+              operation = '=',
+              value = ~unique(animal)[1]
+            )
+          )
+  ) |>
+  layout(
+    updatemenus = list(
+      # Dropdown 0
+      list(
+        type = 'dropdown',
+        buttons = list(
+          # button 0 = cow
+          list(method = "restyle",
+               args = list("transforms[0].value", 'cow'),
+               label = 'Cow'
+          ),
+          # button 1 = chicken
+          list(method = "restyle",
+               args = list("transforms[0].value", 'chicken'),
+               label = 'Chicken'
+          ),
+          # button 2 = pig
+          list(method = "restyle",
+               args = list("transforms[0].value", 'pig'),
+               label = 'Pig'
+          )
+        )
+      )
+    )
+  )
+```
+  
+## Improving our workflow
+
+Mistakes are easily made in coding, and especially when we need to use repetitive
+code that has been manually written (as above). We often forget to change values across repeated chunks and they are hard to spot. The solution to avoid errors and making robust code is to use **functions**.
+
+We will write a function to efficiently make the button list element. We pass it a list of unique values (the unique values of the column we are filtering) and the transform element number, and loop through the values to build the button list elements.
+  
+```{r}
+#' Create a plotly button list for use in updatemenus
+#' 
+#' Creates a list for use as an item within layout(updatemenus=list(list(buttons = XXX)))
+#' 
+#' @param transform_id transform id to link to 
+#' @param filter_values unique values to make buttons for
+#' @param label_prefix label prefix
+create_transform_buttons <- function(transform_id, filter_values, label_prefix = ''){
+    
+    button_items <- 
+      seq_along(filter_values) |>
+      lapply(FUN = function(i){
+        
+        value = filter_values[i]
+        transform_id <- sprintf("transforms[%s].value", transform_id)
+        
+        button_data <-
+          list(method = "restyle",
+               args = list(transform_id, value),
+               label = paste(label_prefix, value))
+      })
+
+}
+```
+
+And then we use it as follows ... note how much simpler it looks.
+
+```{r}
+animal_tests |>
+    plot_ly(x = ~year, y = ~number_animals, color = ~test_type,
+            type = 'bar',
+            text =~animal,
+            hovertemplate = paste0(
+              "Animal: %{text}<br>",
+              "Year: %{x}<br>",
+              "Total Animals: %{y}",
+              "<extra></extra>"
+            ),
+            transforms = list(
+              # transform 0 
+              list(  
+                type = 'filter',
+                target = ~animal,
+                operation = '=',
+                value = ~unique(animal)[1]
+              )
+            )
+    ) |>
+    layout(
+      updatemenus = list(
+        # Dropdown 0
+        list(
+          type = 'dropdown',
+          buttons = create_transform_buttons(
+            transform_id = 0,
+            filter_values = unique(animal_tests$animal),
+          )
+        )
+      )
+    )
+
+```
+  
+  
+## Conclusion
+
+We created a plotly graph in R with a dropdown box that allows the user to select the data they wish to see. We learnt a little bit of how R and JS can be linked and used in plotly. 

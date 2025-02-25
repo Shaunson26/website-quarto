@@ -25,32 +25,43 @@ I have conducted ecological research and worked in public health, leveraging my 
 ::: {.grid .grid-list}
 ::: {.g-col-12 .g-col-md-6}
 ::: sn-list-items
--   Data Science
-    -   Data integration and engineering
-    -   Understanding and application of Information Technology
-    -   DevOps and project management
--   Applied Biostatistics
-    -   Experimental design and hypothesis testing
-    -   Generalised linear models
-    -   Statistical learning
--   R statistical computing and RStudio
-    -   Data pipelines
-    -   R Markdown, Flexdashboard, Shiny
-    -   Package development
+-	Statistical Analysis & Biostatistics
+  -	Design, implementation, interpretation
+  -	Regression modelling, survival analysis
+  -	Statistical programming (R, SAS)
+  -	Machine learning
+  -	Data visualisation
+- Data Engineering & Management
+  -	Data pipeline development and maintenance
+  -	Database use and management (SQL)
+  -	Data APIs
+  -	Data warehousing concepts
+-	Programming & Scripting
+  -	R, SAS, SQL
+  -	PowerShell, shell,
+  - JavaScript
+- DevOps & Software Engineering: 
+  -	Version control (git) 
+  -	Unit testing
+  -	Continuous Integration/Continuous Deployment (CI/CD)
+
 :::
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ::: sn-list-items
--   Frontend web development
-    -   HTML5, CCS3, JavaScript
-    -   WordPress
-    -   Data visualisation - D3, plotly, leaflet, chartjs
--   Linux servers
-    -   Self-hosting: this website!
-    -   Bioinformatics
--   SAS and SAS Enterprise Guide
-    -   Data pipelines
+-	System Administration and Maintenance
+  -	Windows and Linux
+-	Frontend Web Development
+  -	HTML, CSS, JavaScript
+  -	Node, NPM
+  - expressjs
+  -	Bootstap 5
+-	Project Management and Tools
+  -	Strategic work item management and organisation
+  -	Visual progress tracking and reporting
+  -	Effective collaboration and communication
+
 :::
 :::
 :::
@@ -61,10 +72,15 @@ I have conducted ecological research and worked in public health, leveraging my 
 ## Where I've worked
 
 ::: sn-list-items
+-   Consultant, World Health Organisation [2025 - current]{.year-period}
+    -   [Eastern Mediterranean Region](https://www.emro.who.int/index.html)
 -   Freelance [2023 - current]{.year-period}
+    -   University of Sydney
+    -   University of NSW
+    -   Sydney Children's Hospital
     -   HealthStats NSW
     -   Health Protection NSW, Arbovirus disease surveillance
-    -   CISA 2023
+    -   Iberian Congress of Biological Systematics CISA 2023 website
 -   NSW Health, Australia [2019 - 2022]{.year-period}
     -   Public Health Response Branch
     -   Centre for Epidemiology and Evidence
@@ -101,4 +117,32 @@ I have conducted ecological research and worked in public health, leveraging my 
 
 ## Some projects
 
-Maybe some projects here
+::: sn-list-items
+- Predictive modelling for escalation in therapy of children with IBD
+
+Used statistical learning techniques to predict escalation in therapy from blood,
+stool and demographic biomarkers/predictors for children with IBD in collaboration with
+researchers and clinicians from The Sydney Children's hospital. See the working prediction
+model as a shiny app [here](https://shaun-nielsen.shinyapps.io/inflix-predict/).
+
+
+- Data standardisation and normalisation from Arbovirus field records
+
+Standardised data from mosquito trapping and chicken antibody data across sites and
+sampling dates in NSW from historical records and for future data for efficient 
+reporting for NSW Arbovirus and Mosquito Monitoring Surveillance Program. The data
+is used in PowerBI reports [here](https://uatweb.datansw.links.com.au/insights/arbovirus).
+
+- Data pipeline formalisation for spatial smoothing of health indicators
+
+...
+
+
+- Biostatistics of results from refractive eye surgery 
+
+...
+
+- Web app construction for personalized climate projections and politician behaviour 
+
+...
+:::
