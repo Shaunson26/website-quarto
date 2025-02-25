@@ -6,6 +6,7 @@ format:
 
 ::: {.grid .home-info}
 ::: {.g-col-12 .g-col-md-6}
+
 [H]{.large-letter}ello! I'm Shaun Nielsen.
 
 I have a diverse professional background encompassing Biostatistics, Data Integration and Engineering, Bioinformatics, Web Development, System Administration. My career spans roles as a Biostatistician and Data Analyst at NSW Health, a Postdoctoral Researcher at the University of NSW and as a Freelancer in Information Technology.
