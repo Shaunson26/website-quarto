@@ -8,7 +8,7 @@ format:
 ::: {.g-col-12 .g-col-md-6}
 [H]{.large-letter}ello! I'm Shaun Nielsen.
 
-I have a diverse professional background encompassing Biostatistics, Data Integration and Engineering, Web Development, and System Administration. My career spans roles as a Biostatistician and Data Analyst at NSW Health, a Postdoctoral Researcher at the University of NSW and as a Freelancer in Information Technology.
+I have a diverse professional background encompassing Biostatistics, Data Integration and Engineering, Bioinformatics, Web Development, System Administration. My career spans roles as a Biostatistician and Data Analyst at NSW Health, a Postdoctoral Researcher at the University of NSW and as a Freelancer in Information Technology.
 
 I have conducted ecological research and worked in public health, leveraging my analytical and technical skills to provide robust data assets that drive insights, inform decision-making and add to our body of knowledge. Additionally, I bridge technical expertise with creative problem-solving by engaging in website development projects.
 
