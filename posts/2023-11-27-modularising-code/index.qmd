@@ -19,74 +19,114 @@ I've been working on a project where I've had to incorporate better development 
 
 ## Example function
 
-``` r
+```{r, eval=FALSE}
 this_long_function <- function(data){
   
   data_tmp <-
-    data %>% 
-    dplyr::filter(this)
+    data |>  
+    do_this |> 
+    then_do_that |> 
+    and_that
+  
+  population_dataset <-
+    read_this_file()
   
   data_tmp <-
-    data_tmp %>%
-    to_that
+    data_tmp |> 
+    join(population_dataset)
+  
+  data_model <- model_this(data_tmp)
+  
+  data_model_estimates <-
+    data_model |> 
+    predict()
+  
+  
+  data_final <-
+    data_model_estimates |> 
+    do_this |> 
+    then_do_that |> 
+    and_that
+  
+  data_final
   
 }
 ```
 
-**Issues:** How do we easily understnad what each step is doing and further ensure they're doing them correctly?
+**Issues:** How do we easily understand what each step is doing and further ensure they're doing them correctly?
 
 ## Modular code
 
-``` r
-#| eval = F
-step1 <- function(data){
-  do this
+```{r, eval=FALSE}
+structure_input_data <- function(data){
+data |>  
+do_this |> 
+then_do_that |> 
+and_that
 }
 
-step2 <- function(data){
-  do that
+join_population_data <- function(data){
+
+population_dataset <-
+read_this_file()
+
+data |> 
+join(population_dataset)
 }
+
+# ...
 
 this_long_function <- function(data){
-  
-  data_tmp <-
-    step1()
-  
-  data_tmp <-
-    step2()
-  
+
+data_tmp <-
+structure_input_data()
+
+data_tmp <-
+join_population_data()
+
+# ...
+
 }
 ```
 
-```         
-## Error: <text>:2:6: unexpected symbol
-## 1: step1 <- function(data){
-## 2:   do this
-##         ^
-```
+## Testing modular code
 
-``` r
-test_that("add_rolling_year_data works", {
+Now we can test the functionality and expected outputs of the functions
 
-  zz =
-    data.frame(year = 2022:2021,
-               value = 2:1)
-
-  result <- add_rolling_year_data(zz, 2)
-
-  # Should have 2x 2022 with rolling values of 2022 and 2021
-  # Should have 1 2021 with rolling values 2021
-  expected =
-    data.frame(year = c(2022,2021,2022),
-               value = c(2L,1L,1L),
-               year_rolling = c(2022L,2021L,2021L))
-
-  expect_identical(result, expected = expected)
-
-
+```{r, eval=FALSE}
+test_that("structure_input_data works", {
+  
+  # A test dataset
+  test_data =
+    data.frame(
+      year = c(2022, 2021, 2022, 2021),
+      sex = c('male', 'male', 'female', 'female'),
+      value = c(4,3,2,1)
+    )
+  
+  # What is to be expected
+  expected_data =
+    data.frame(
+      ReportingValue1 = c(2022, 2021, 2022, 2021),
+      ReportingValue2 = c('male', 'male', 'female', 'female'),
+      Value = c(4,3,2,1)
+    )
+  
+  # The output from the function
+  result <- 
+    structure_input_data(test_data)
+  
+  # A number of tests
+  testthat::expect_true(
+    names(result) == names(expected_data)
+  )
+  
+   testthat::expect_true(
+    result$ReportingValue1 == test_data$year
+  )
+  
+  
 })
 ```
 
-```         
-## Error in test_that("add_rolling_year_data works", {: could not find function "test_that"
-```
+

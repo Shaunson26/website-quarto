@@ -9,9 +9,7 @@ format:
 
 [H]{.large-letter}ello! I'm Shaun Nielsen.
 
-I have a diverse professional background encompassing Biostatistics, Data Integration and Engineering, Bioinformatics, Web Development, System Administration. My career spans roles as a Biostatistician and Data Analyst at NSW Health, a Postdoctoral Researcher at the University of NSW and as a Freelancer in Information Technology.
-
-I have conducted ecological research and worked in public health, leveraging my analytical and technical skills to provide robust data assets that drive insights, inform decision-making and add to our body of knowledge. Additionally, I bridge technical expertise with creative problem-solving by engaging in website development projects.
+I'm a data-driven professional with a diverse background spanning data science and engineering, biostatistics, and web development. My experience includes freelance data science and engineering consulting, performing statistical analysis and data management for public health initiatives at NSW Health, and conducting postdoctoral ecological research at the University of NSW. I leverage my analytical and technical skills to inform decision-making and solve complex problems across public health, research, and information technology.
 
 :::
 
@@ -75,37 +73,50 @@ I have conducted ecological research and worked in public health, leveraging my 
 :::
 :::
 
-::: {.grid .grid-list}
-::: {.g-col-12 .g-col-md-6}
 
 ## Where I've worked
 
+::: {.grid .grid-list}
+::: {.g-col-12 .g-col-md-6}
 ::: sn-list-items
--   Consultant, World Health Organisation [2025 - current]{.year-period}
-    -   [Eastern Mediterranean Region](https://www.emro.who.int/index.html)
--   Freelance [2023 - current]{.year-period}
+
+-   Freelance Data Science and Engineering Consultant [2023 - current]{.year-period}
     -   University of Sydney
     -   University of NSW
     -   Sydney Children's Hospital
     -   HealthStats NSW
     -   Health Protection NSW, Arbovirus disease surveillance
-    -   Iberian Congress of Biological Systematics CISA 2023 website
+    -   Iberian Congress of Biological Systematics CISA
 -   NSW Health, Australia [2019 - 2022]{.year-period}
-    -   Public Health Response Branch
+    -   Public Health Response Branch - COVID-18
     -   Centre for Epidemiology and Evidence
     -   NSW Health Biostatistics Training Program
--   Lancaster University, UK [2018 - 2019]{.year-period}
-    -   The Lancaster Environmental Centre
--   University of NSW, Australia [2013 - 2017]{.year-period}
-    -   Centre for Marine Bio-innovation
 
 :::
 :::
 
 ::: {.g-col-12 .g-col-md-6}
+::: sn-list-items
+
+-   Lancaster University, UK [2018 - 2019]{.year-period}
+    -   The Lancaster Environmental Centre
+-   University of NSW, Australia [2013 - 2017]{.year-period}
+    -   Centre for Marine Bio-innovation
+    - School of Biological, Earth and Environmental Sciences
+    - School of of Biotechnology and Biomolecular Sciences
+
+:::
+:::
+:::
+
+
+
+
 
 ## My education
 
+::: {.grid .grid-list}
+::: {.g-col-12 .g-col-md-6}
 ::: sn-list-items
 -   Master of Biostatistics
     -   University of Sydney
@@ -113,6 +124,12 @@ I have conducted ecological research and worked in public health, leveraging my 
 -   NSW Health Biostatistics Training Program
     -   NSW Health
     -   2018 - 2021
+    
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: sn-list-items
 -   Doctor of Philosophy (PhD) in Biological Science
     -   University of NSW
     -   2008 - 2013
@@ -124,34 +141,31 @@ I have conducted ecological research and worked in public health, leveraging my 
 :::
 :::
 
-## Some projects
 
-::: sn-list-items
+## Some projects I worked on
 
-- Health data pipeline management
+#### Health data pipeline management
 
 Developed and maintained a Windows server cluster at NSW Health for scheduled ETL pipelines, dashboard creation and ad-hock data requests, with automated error reporting and summary e-mail notifications, and task logging for troubleshooting. I introduced version control, modularised pipeline steps, created functions in pipelines and improved documentation for future future personel. 
 
-- Predictive modelling for escalation in therapy of children with IBD
+#### Predictive modelling for escalation in therapy of children with IBD
 
 Used statistical learning techniques to build a prediction model for paediatric use of ‘biologics’ in inflammatory bowel disease (IBD) using blood and stool biomarkers, with researchers and clinicians at the Sydney Children’s Hospital and University of NSW (Australia). See the working prediction model as a shiny app [here](https://shaun-nielsen.shinyapps.io/inflix-predict/).
 
 
-- Data normalisation and visualisation templates for NSW Arbovirus and Mosquito Monitoring Surveillance Program
+#### Data normalisation and visualisation templates for NSW Arbovirus and Mosquito Monitoring Surveillance Program
 
 Normalised the Arbovirus survey, laboratory and notification data, and prototyped visualisations (geographic maps, bar and line charts, heatmaps), for downstream developer use in creating the “NSW Arbovirus and Mosquito Monitoring Surveillance Program Dashboard” from Environmental Health Branch (NSW Health, Australia).  The data is used in a PowerBI report [here](https://uatweb.datansw.links.com.au/insights/arbovirus).
 
-- Data pipeline formalisation for spatial smoothing of health indicators
+#### Data pipeline formalisation for spatial smoothing of health indicators
 
-Applied software engineering and development principles to generalize, formalize and package the codebase for model based, spatial smoothing pipelines of HealthStats NSW indictors within an R package framework, including the modular functions, documentation, vignettes and unit testing.
+Applied software engineering and development principles to generalize, formalize and package the codebase for model based, spatial smoothing pipelines of HealthStats NSW indictors within an R package framework, including the modular functions, documentation, vignettes and unit testing. See HealthStat NSW [here](https://www.healthstats.nsw.gov.au/home)
 
-- Biostatistics refractive eye surgery 
+#### Biostatistics refractive eye surgery 
 
 Biostatistical consultant - designed the Statistical Analysis Protocol for a project analysing visual outcomes, efficacy and safety of a new generation laser eye machines with researchers at the University of NSW (Australia), Shroff Eye Centre, New Delhi (India) and Johnson & Johnson Vision (Singapore). 
 
-- Web application exploring local climate projections and politican voting on climate policies 
+#### Web application exploring local climate projections and politican voting on climate policies 
 
 Developed and deployed an MVP web application for local climate projection and politician voting analysis with researchers from the University of Sydney (Australia). Integrated and processed data from multiple data APIs, created a fast and accurate address search database, managed the server deployment and used continuous integration and continuous delivery (CI/CD) practices. See the app [here](http://dev.myclimate.com.au)
 
-
-:::

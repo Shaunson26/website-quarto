@@ -1,0 +1,15 @@
+{
+  "hash": "f02fa03d47b5139e8b152cce66df87d2",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: Modularising code\nauthor: Shaun Nielsen\ndate: '2023-11-27'\nslug: []\ncategories: ['coding-practices']\ntags: []\n---\n\n\n\nI've been working on a project where I've had to incorporate better development practices. One issue was the long-winded functions that required breaking up into into smaller pieces for unit testing, and easy digestion by future developers.\n\n<!--more-->\n\n## Background\n\n-   Working with non-programming but data/stat experts\n-   Long functions\n-   No testing\n\n## Example function\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nthis_long_function <- function(data){\n  \n  data_tmp <-\n    data |>  \n    do_this |> \n    then_do_that |> \n    and_that\n  \n  population_dataset <-\n    read_this_file()\n  \n  data_tmp <-\n    data_tmp |> \n    join(population_dataset)\n  \n  data_model <- model_this(data_tmp)\n  \n  data_model_estimates <-\n    data_model |> \n    predict()\n  \n  \n  data_final <-\n    data_model_estimates |> \n    do_this |> \n    then_do_that |> \n    and_that\n  \n  data_final\n  \n}\n```\n:::\n\n\n\n**Issues:** How do we easily understand what each step is doing and further ensure they're doing them correctly?\n\n## Modular code\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nstructure_input_data <- function(data){\ndata |>  \ndo_this |> \nthen_do_that |> \nand_that\n}\n\njoin_population_data <- function(data){\n\npopulation_dataset <-\nread_this_file()\n\ndata |> \njoin(population_dataset)\n}\n\n# ...\n\nthis_long_function <- function(data){\n\ndata_tmp <-\nstructure_input_data()\n\ndata_tmp <-\njoin_population_data()\n\n# ...\n\n}\n```\n:::\n\n\n\n## Testing modular code\n\nNow we can test the functionality and expected outputs of the functions\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\ntest_that(\"structure_input_data works\", {\n  \n  # A test dataset\n  test_data =\n    data.frame(\n      year = c(2022, 2021, 2022, 2021),\n      sex = c('male', 'male', 'female', 'female'),\n      value = c(4,3,2,1)\n    )\n  \n  # What is to be expected\n  expected_data =\n    data.frame(\n      ReportingValue1 = c(2022, 2021, 2022, 2021),\n      ReportingValue2 = c('male', 'male', 'female', 'female'),\n      Value = c(4,3,2,1)\n    )\n  \n  # The output from the function\n  result <- \n    structure_input_data(test_data)\n  \n  # A number of tests\n  testthat::expect_true(\n    names(result) == names(expected_data)\n  )\n  \n   testthat::expect_true(\n    result$ReportingValue1 == test_data$year\n  )\n  \n  \n})\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
